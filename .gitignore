@@ -1,0 +1,43 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs and build artifacts
+npm-debug.log
+yarn-error.log
+*.log
+*.log.*
+*.swp
+.DS_Store
+
+# Dependency directories
+.jest
+.pnp
+.pnp.js
+
+# Output files
+/dist
+/out
+/build
+
+# Environment-specific files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Visual Studio Code specific files
+.vscode/
+.vscodeignore
+
+# Miscellaneous
+*.DS_Store
+Thumbs.db
