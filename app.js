@@ -24,7 +24,7 @@ app.use(methodOverride("_method"));
 main().catch((err) => console.log(err));
 
 async function main() {
-	await mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp", {});
+	await mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp-app", {});
 	console.log("Database is successfully connected.");
 }
 
