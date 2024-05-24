@@ -2,7 +2,9 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
-const port = 3000;
+const port = process.env.PORT || 3000;
+const Campground = require("./models/campground");
+
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 
@@ -28,11 +30,61 @@ async function main() {
 	console.log("Database is successfully connected.");
 }
 
-app.listen(port, () => {
-	console.log(`YelpCamp app listening on port ${port}`);
-});
-
 // ROUTES
 app.get("/", (req, res) => {
-	res.send("Express App is working");
+	res.render("home");
+});
+
+app.get("/campgrounds", async (req, res) => {
+	const allCampgrounds = await Campground.find({});
+	res.render(`campgrounds/index`, { allCampgrounds });
+});
+
+app.get("/campgrounds/new", (req, res) => {
+	res.render("campgrounds/newCampground");
+});
+
+app.post("/campgrounds", async (req, res) => {
+	const campground = new Campground(req.body.campground);
+	await campground.save();
+	res.redirect(`/campgrounds/${campground._id}`);
+});
+
+app.get("/campgrounds/:id/edit", async (req, res) => {
+	const { id } = req.params;
+	const campground = await Campground.findById(id);
+	res.render("campgrounds/editCampground", { campground });
+});
+
+app.put("/campgrounds/:id", async (req, res) => {
+	const { id } = req.params;
+	const updatedCampground = await Campground.findByIdAndUpdate(
+		id,
+		{ ...req.body.campground },
+		{
+			runValidators: true,
+			new: true,
+		}
+	);
+
+	console.log(updatedCampground);
+	res.redirect(`/campgrounds/${updatedCampground._id}`);
+});
+
+app.delete("/campgrounds/:id", async (req, res) => {
+	const { id } = req.params;
+	const deleteCampground = await Campground.findByIdAndDelete(id);
+	res.redirect("/campgrounds");
+});
+
+app.get("/campgrounds/:id", async (req, res) => {
+	const { id } = req.params;
+	const campground = await Campground.findById(id);
+	res.render("campgrounds/showDetails", { campground });
+});
+
+// Start the Express server and listen for incoming requests on the specified port
+// Log a message to the console indicating the server is running and the port number
+app.listen(port, () => {
+	console.log(`YelpCamp app listening on port ${port}`);
 });
