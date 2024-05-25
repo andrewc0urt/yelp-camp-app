@@ -4,6 +4,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const port = process.env.PORT || 3000;
 const Campground = require("./models/campground");
+const catchAsync = require("./utilities/catchAsync");
 
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
@@ -35,28 +36,29 @@ app.get("/", (req, res) => {
 	res.render("home");
 });
 
-app.get("/campgrounds", async (req, res) => {
+app.get("/campgrounds", catchAsync(async (req, res) => {
 	const allCampgrounds = await Campground.find({});
 	res.render(`campgrounds/index`, { allCampgrounds });
-});
+}));
 
 app.get("/campgrounds/new", (req, res) => {
 	res.render("campgrounds/newCampground");
 });
 
-app.post("/campgrounds", async (req, res) => {
-	const campground = new Campground(req.body.campground);
-	await campground.save();
-	res.redirect(`/campgrounds/${campground._id}`);
-});
+app.post("/campgrounds", catchAsync(async (req, res, next) => {
+		const campground = new Campground(req.body.campground);
+		await campground.save();
+		res.redirect(`/campgrounds/${campground._id}`);
+	})
+);
 
-app.get("/campgrounds/:id/edit", async (req, res) => {
+app.get("/campgrounds/:id/edit", catchAsync(async (req, res) => {
 	const { id } = req.params;
 	const campground = await Campground.findById(id);
 	res.render("campgrounds/editCampground", { campground });
-});
+}));
 
-app.put("/campgrounds/:id", async (req, res) => {
+app.put("/campgrounds/:id", catchAsync(async (req, res) => {
 	const { id } = req.params;
 	const updatedCampground = await Campground.findByIdAndUpdate(
 		id,
@@ -69,18 +71,23 @@ app.put("/campgrounds/:id", async (req, res) => {
 
 	console.log(updatedCampground);
 	res.redirect(`/campgrounds/${updatedCampground._id}`);
-});
+}));
 
-app.delete("/campgrounds/:id", async (req, res) => {
+app.delete("/campgrounds/:id", catchAsync(async (req, res) => {
 	const { id } = req.params;
 	const deleteCampground = await Campground.findByIdAndDelete(id);
 	res.redirect("/campgrounds");
-});
+}));
 
-app.get("/campgrounds/:id", async (req, res) => {
+app.get("/campgrounds/:id", catchAsync(async (req, res) => {
 	const { id } = req.params;
 	const campground = await Campground.findById(id);
 	res.render("campgrounds/showDetails", { campground });
+}));
+
+// Express error-handling middleware
+app.use((err, req, res, next) => {
+	res.send("Something went wrong!");
 });
 
 // Start the Express server and listen for incoming requests on the specified port
