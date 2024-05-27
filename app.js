@@ -6,6 +6,7 @@ const port = process.env.PORT || 3000;
 const Campground = require("./models/campground");
 const ExpressError = require("./utilities/ExpressError");
 const catchAsync = require("./utilities/catchAsync");
+const Joi = require("joi");
 
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
@@ -52,9 +53,40 @@ app.get("/campgrounds/new", (req, res) => {
 app.post(
 	"/campgrounds",
 	catchAsync(async (req, res, next) => {
-		if (!req.body.campground) {
-			throw new ExpressError("Invalid Campground Data", 400);
+		// if (!req.body.campground) {
+		// 	throw new ExpressError("Invalid Campground Data", 400);
+		// }
+
+		// not a Mongoose schema; this uses Joi to validate a campground object before involving mongoose and saving to the database
+		const campgroundSchema = Joi.object({
+			campground: Joi.object({
+				title: Joi.string().required(),
+				price: Joi.number().required().min(0),
+			}).required(),
+			image: Joi.string().required(),
+			location: Joi.string().required(),
+			description: Joi.string().required(),
+		});
+
+		// const result = campgroundSchema.validate(req.body);
+		// console.log(result);
+		// console.log(result.error);
+
+		// take the 'error' key from the resulting object after .validate(req.body)
+		const { error } = campgroundSchema.validate(req.body);
+		if (error) {
+			// use map to iterate over each object in the 'details' array and extract the error message
+			const msg = error.details.map((element) => element.message).join(",");
+			console.log(msg);
+			throw new ExpressError(msg, 400);
 		}
+
+		// console.log(result.error.details[0].message);
+
+		// if (result.error) {
+		// 	throw new ExpressError(result.error.details[0].message, 400);
+		// }
+
 		const campground = new Campground(req.body.campground);
 		await campground.save();
 		res.redirect(`/campgrounds/${campground._id}`);
@@ -113,7 +145,7 @@ app.all("*", (req, res, next) => {
 // Express error-handling middleware
 app.use((err, req, res, next) => {
 	// const { message = "Something went wrong!", statusCode = 500 } = err;
-	const { statusCode } = err;
+	const { statusCode = 500 } = err;
 	if (!err.message) {
 		err.message = "Ooops! Something went wrong.";
 	}
