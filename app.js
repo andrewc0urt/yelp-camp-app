@@ -33,6 +33,7 @@ async function main() {
 	console.log("Database is successfully connected.");
 }
 
+// Middleware to Validate a new campground using JOI
 const validateCampground = (req, res, next) => {
 
 	// use the JOI .validate method to get any errors
@@ -63,7 +64,6 @@ app.get("/campgrounds/new", (req, res) => {
 	res.render("campgrounds/newCampground");
 });
 
-// Middleware to Validate a new campground using JOI
 
 app.post("/campgrounds", validateCampground, catchAsync(async (req, res, next) => {
 	// if (!req.body.campground) {
