@@ -3,7 +3,12 @@
 	<h1 class="text-center">Edit Campground</h1>
 
 	<div class="col-6 offset-3">
-		<form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST">
+		<form
+			action="/campgrounds/<%= campground._id %>?_method=PUT"
+			method="POST"
+			novalidate
+			class="validated-form"
+		>
 			<div class="mb-3">
 				<label for="title" class="form-label">Campground Title</label>
 				<input
@@ -12,7 +17,9 @@
 					name="campground[title]"
 					id="title"
 					value="<%= campground.title %>"
+					required
 				/>
+				<div class="valid-feedback">Looks good!</div>
 			</div>
 
 			<div class="mb-3">
@@ -23,7 +30,9 @@
 					name="campground[location]"
 					id="location"
 					value="<%= campground.location %>"
+					required
 				/>
+				<div class="valid-feedback">Looks good!</div>
 			</div>
 
 			<div class="mb-3">
@@ -34,14 +43,9 @@
 					name="campground[image]"
 					id="image"
 					value="<%= campground.image %>"
+					required
 				/>
-			</div>
-
-			<div class="mb-3">
-				<label for="description" class="form-label">Description</label>
-				<textarea class="form-control" name="campground[description]" id="description">
-<%= campground.description %></textarea
-				>
+				<div class="valid-feedback">Looks good!</div>
 			</div>
 
 			<div class="mb-3">
@@ -56,9 +60,19 @@
 						name="campground[price]"
 						id="price"
 						value="<%= campground.price %>"
+						required
 					/>
 					<span class="input-group-text">.00</span>
+					<div class="valid-feedback">Looks good!</div>
 				</div>
+			</div>
+
+			<div class="mb-3">
+				<label for="description" class="form-label">Description</label>
+				<textarea class="form-control" name="campground[description]" id="description" required>
+<%= campground.description %></textarea
+				>
+				<div class="valid-feedback">Looks good!</div>
 			</div>
 
 			<button class="btn btn-warning mb-3">Update Campground</button>
