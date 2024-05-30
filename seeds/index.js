@@ -39,7 +39,7 @@ const seedDB = async () => {
 	await Campground.deleteMany({});
 
 	// loop through 50 times to create 50 new random campgrounds
-	for (let i = 0; i < 5; i++) {
+	for (let i = 0; i < 8; i++) {
 		const random1000 = Math.floor(Math.random() * 1000) + 1;
 		const randomImageURLs = await seedRandomImg();
 		const price = Math.floor(Math.random() * 21) + 10; // random price b/w 10-30
