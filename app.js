@@ -6,7 +6,7 @@ const port = process.env.PORT || 3000;
 const Campground = require("./models/campground");
 const ExpressError = require("./utilities/ExpressError");
 const catchAsync = require("./utilities/catchAsync");
-const { campgroundSchema } = require("./schemas");
+const { campgroundSchema, reviewSchema } = require("./schemas");
 const Review = require("./models/review");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
@@ -47,6 +47,17 @@ const validateCampground = (req, res, next) => {
     next();
   }
 };
+
+const validateReview = (req, res, next) => {
+  const { error } = reviewSchema.validate(req.body);
+
+  if (error) {
+    const msg = error.details.map((element) => element.message).join(",")
+    throw new ExpressError(msg, 400)
+  } else {
+    next();
+  }
+}
 
 // ROUTES
 app.get("/", (req, res) => {
@@ -111,7 +122,7 @@ app.get("/campgrounds/:id", catchAsync(async (req, res) => {
 })
 );
 
-app.post("/campgrounds/:id/reviews", catchAsync(async (req, res) => {
+app.post("/campgrounds/:id/reviews", validateReview, catchAsync(async (req, res) => {
   console.log(req.params)
   const { id } = req.params;
   const campground = await Campground.findById(id);

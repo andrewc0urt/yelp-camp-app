@@ -21,7 +21,7 @@
       <div class="card-footer text-body-secondary">2 days ago</div>
     </div>
 
-    <form action="/campgrounds/<%= campground._id %>/reviews" method="POST" class="mb-3">
+    <form action="/campgrounds/<%= campground._id %>/reviews" method="POST" class="mb-3 validated-form" novalidate>
       <h2>Leave a Review</h2>
       <div class="mb-3">
         <label class="form-label" for="rating">Rating</label>
@@ -29,7 +29,8 @@
       </div>
       <div class="mb-3">
         <label class="form-label" for="reviewBody">Review:</label>
-        <textarea class="form-control" name="review[body]" id="reviewBody"></textarea>
+        <textarea class="form-control" name="review[body]" id="reviewBody" required></textarea>
+        <div class="valid-feedback">Looks good!</div>
       </div>
       <button class="btn btn-success">Submit</button>
     </form>
