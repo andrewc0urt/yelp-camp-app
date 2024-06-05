@@ -118,9 +118,27 @@ app.delete("/campgrounds/:id", catchAsync(async (req, res) => {
 app.get("/campgrounds/:id", catchAsync(async (req, res) => {
   const { id } = req.params;
   const campground = await Campground.findById(id).populate("reviews");
-  console.log(campground);
+  // console.log(campground);
   res.render("campgrounds/showDetails", { campground });
 })
+);
+
+// allow user to delete a review
+app.delete(
+  "/campgrounds/:id/reviews/:reviewId",
+  catchAsync(async (req, res) => {
+    // find the campground and delete the corresponding id
+    // find the review using the id
+    const { id, reviewId } = req.params;
+
+    // using the specific campground to delete the specified review associated with it in the db
+    const removeCampgroundReview = await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+
+    // delete the review from the reviews db collection
+    const deletedReview = await Review.findByIdAndDelete(reviewId);
+    // console.log(`This is the deleted review: ${deletedReview}`);
+    res.redirect(`/campgrounds/${id}`);
+  })
 );
 
 app.post("/campgrounds/:id/reviews", validateReview, catchAsync(async (req, res) => {
