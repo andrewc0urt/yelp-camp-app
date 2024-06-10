@@ -10,7 +10,8 @@ const { campgroundSchema, reviewSchema } = require("./schemas");
 const Review = require("./models/review");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-const session = require('express-session')
+const session = require("express-session");
+const flash = require("connect-flash");
 
 const campgroundsRoute = require("./routes/campgrounds");
 const reviewsRoute = require("./routes/reviews");
@@ -30,20 +31,22 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 app.use(methodOverride("_method"));
 
 // tell express to serve up the public folder with static files
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 // use express-session
 const sessionConfig = {
-  secret: 'thisisatemporarysecret',
+  secret: "thisisatemporarysecret",
   resave: false,
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
-    maxAge: 1000 * 60 * 60 * 24 * 7
-  }
-}
-app.use(session(sessionConfig))
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  },
+};
+app.use(session(sessionConfig));
+
+app.use(flash());
 
 // Connect mongoose
 main().catch((err) => console.log(err));
@@ -53,16 +56,23 @@ async function main() {
   console.log("Database is successfully connected.");
 }
 
-const validateReview = (req, res, next) => {
-  const { error } = reviewSchema.validate(req.body);
+// const validateReview = (req, res, next) => {
+//   const { error } = reviewSchema.validate(req.body);
 
-  if (error) {
-    const msg = error.details.map((element) => element.message).join(",");
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
-};
+//   if (error) {
+//     const msg = error.details.map((element) => element.message).join(",");
+//     throw new ExpressError(msg, 400);
+//   } else {
+//     next();
+//   }
+// };
+
+// Middle to use express-flash
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  next();
+});
 
 // Use the Router objects created in the routes folder
 app.use("/campgrounds", campgroundsRoute);
