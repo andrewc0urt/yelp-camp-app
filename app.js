@@ -12,9 +12,13 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
 const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
 
+const userRoute = require("./routes/users");
 const campgroundsRoute = require("./routes/campgrounds");
 const reviewsRoute = require("./routes/reviews");
+const User = require("./models/user");
 
 // use ejs-locals for all ejs templates:
 app.engine("ejs", ejsMate);
@@ -29,6 +33,8 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 
 // npm package method-override with POST having ?_method=DELETE
 app.use(methodOverride("_method"));
+
+app.use(flash());
 
 // tell express to serve up the public folder with static files
 app.use(express.static(path.join(__dirname, "public")));
@@ -46,7 +52,14 @@ const sessionConfig = {
 };
 app.use(session(sessionConfig));
 
-app.use(flash());
+// middleware required to use passport (see docs for more)
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate())); // tell passport to use LocalStrategy, pass the User model and authenticate it
+
+// maintain a login session for a user (store and unstore sessions)
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // Connect mongoose
 main().catch((err) => console.log(err));
@@ -74,9 +87,16 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get("/fakeUser", async (req, res) => {
+  const user = new User({ email: "testuser2@test.com", username: "tester1234" });
+  const newRegisteredUser = await User.register(user, "chicken");
+  res.send(newRegisteredUser);
+});
+
 // Use the Router objects created in the routes folder
 app.use("/campgrounds", campgroundsRoute);
 app.use("/campgrounds/:id/reviews", reviewsRoute);
+app.use("/", userRoute);
 
 // ROUTES
 app.get("/", (req, res) => {
