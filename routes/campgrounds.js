@@ -6,7 +6,7 @@ const Campground = require("../models/campground");
 const Review = require("../models/review");
 const { campgroundSchema, reviewSchema } = require("../schemas");
 // const { isLoggedIn } = require("../middleware");
-const isLoggedIn = require("../middleware");
+const { isLoggedIn } = require("../middleware");
 
 // Middleware to Validate a new campground using JOI
 const validateCampground = (req, res, next) => {
