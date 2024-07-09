@@ -7,6 +7,7 @@ const Campground = require("../models/campground");
 const Review = require("../models/review");
 
 const { reviewSchema } = require("../schemas");
+const { isLoggedIn, isReviewAuthor } = require("../middleware");
 
 // Middleware to validate a review
 const validateReview = (req, res, next) => {
@@ -23,6 +24,7 @@ const validateReview = (req, res, next) => {
 // allow a user to post a review
 router.post(
   "/",
+  isLoggedIn,
   validateReview,
   catchAsync(async (req, res) => {
     // console.log(req.params);
@@ -31,9 +33,14 @@ router.post(
 
     const review = new Review(req.body.review);
 
-    console.log(`Campground: ${campground}`);
+    // set the author of the review
+    review.author = req.user._id;
+    // console.log(review);
+
+    // console.log(`Campground: ${campground}`);
 
     campground.reviews.push(review);
+    console.log("REVIEW:", review);
 
     await review.save();
     await campground.save();
@@ -46,6 +53,8 @@ router.post(
 // allow user to delete a review
 router.delete(
   "/:reviewId",
+  isLoggedIn,
+  isReviewAuthor,
   catchAsync(async (req, res) => {
     // find the campground and delete the corresponding id
     // find the review using the id
