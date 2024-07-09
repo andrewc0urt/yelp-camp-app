@@ -1,6 +1,7 @@
 const { campgroundSchema } = require("./schemas");
 const ExpressError = require("./utilities/ExpressError");
 const Campground = require("./models/campground");
+const Review = require("./models/review");
 
 const isLoggedIn = (req, res, next) => {
   console.log(req.path, "------------", req.originalUrl);
@@ -64,4 +65,17 @@ const isAuthor = async (req, res, next) => {
   next();
 };
 
-module.exports = { isLoggedIn, storeReturnTo, validateCampground, isAuthor };
+// Middleware to Check if Review Autho matches the Currently Logged in User
+const isReviewAuthor = async (req, res, next) => {
+  const { id, reviewId } = req.params;
+  const review = await Review.findById(reviewId);
+
+  if (!review.author.equals(req.user.id)) {
+    req.flash("error", "You do not have permission Edit or Delete reviews. ");
+    return res.redirect(`/campgrounds/${id}`);
+  }
+
+  next();
+};
+
+module.exports = { isLoggedIn, storeReturnTo, validateCampground, isAuthor, isReviewAuthor };
