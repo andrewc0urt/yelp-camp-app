@@ -1,3 +1,7 @@
+const { campgroundSchema } = require("./schemas");
+const ExpressError = require("./utilities/ExpressError");
+const Campground = require("./models/campground");
+
 const isLoggedIn = (req, res, next) => {
   console.log(req.path, "------------", req.originalUrl);
   // use Passport's isAuthenticated to see if a user's logged in
@@ -31,4 +35,33 @@ const storeReturnTo = (req, res, next) => {
   next();
 };
 
-module.exports = { isLoggedIn, storeReturnTo };
+// Middleware to Validate a new campground using JOI
+const validateCampground = (req, res, next) => {
+  // use the JOI .validate method to get any errors
+  // take the 'error' key from the resulting object after .validate(req.body)
+  const { error } = campgroundSchema.validate(req.body);
+  if (error) {
+    // use map to iterate over each object in the 'details' array and extract the error message
+    const msg = error.details.map((element) => element.message).join(",");
+    // console.log(msg);
+    throw new ExpressError(msg, 400);
+  } else {
+    next();
+  }
+};
+
+// Middleware to Check if Campground Author Id matches the Currently Logged In User Id
+const isAuthor = async (req, res, next) => {
+  const { id } = req.params;
+  const campground = await Campground.findById(id);
+
+  // Protect the campground so it cannot be edited on backend if the author doesn't match the current logged in user
+  if (!campground.author.equals(req.user._id)) {
+    req.flash("error", "You do not have permission to do that!");
+    return res.redirect(`/campgrounds/${id}`);
+  }
+
+  next();
+};
+
+module.exports = { isLoggedIn, storeReturnTo, validateCampground, isAuthor };

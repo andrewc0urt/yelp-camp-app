@@ -1,27 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const catchAsync = require("../utilities/catchAsync");
-const ExpressError = require("../utilities/ExpressError");
 const Campground = require("../models/campground");
 const Review = require("../models/review");
-const { campgroundSchema, reviewSchema } = require("../schemas");
 // const { isLoggedIn } = require("../middleware");
-const { isLoggedIn } = require("../middleware");
-
-// Middleware to Validate a new campground using JOI
-const validateCampground = (req, res, next) => {
-  // use the JOI .validate method to get any errors
-  // take the 'error' key from the resulting object after .validate(req.body)
-  const { error } = campgroundSchema.validate(req.body);
-  if (error) {
-    // use map to iterate over each object in the 'details' array and extract the error message
-    const msg = error.details.map((element) => element.message).join(",");
-    // console.log(msg);
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
-};
+const { validateCampground, isLoggedIn, isAuthor } = require("../middleware");
 
 router.get(
   "/",
@@ -55,6 +38,7 @@ router.post(
 router.get(
   "/:id/edit",
   isLoggedIn,
+  isAuthor,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
@@ -62,6 +46,7 @@ router.get(
       req.flash("error", "Uh-oh, that campground was not found!");
       return res.redirect("/campgrounds");
     }
+
     res.render("campgrounds/editCampground", { campground });
   })
 );
@@ -69,9 +54,11 @@ router.get(
 router.put(
   "/:id",
   isLoggedIn,
+  isAuthor,
   validateCampground,
   catchAsync(async (req, res) => {
     const { id } = req.params;
+
     const updatedCampground = await Campground.findByIdAndUpdate(
       id,
       { ...req.body.campground },
@@ -90,6 +77,7 @@ router.put(
 router.delete(
   "/:id",
   isLoggedIn,
+  isAuthor,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const deleteCampground = await Campground.findByIdAndDelete(id);
