@@ -9,7 +9,9 @@ const Review = require("../models/review");
 const { reviewSchema } = require("../schemas");
 const { isLoggedIn, isReviewAuthor } = require("../middleware");
 
-// Middleware to validate a review
+const reviewController = require("../controllers/reviews");
+
+// Middleware to validate a review (could push this into middleware.js file later down the road)
 const validateReview = (req, res, next) => {
   const { error } = reviewSchema.validate(req.body);
 
@@ -22,54 +24,9 @@ const validateReview = (req, res, next) => {
 };
 
 // allow a user to post a review
-router.post(
-  "/",
-  isLoggedIn,
-  validateReview,
-  catchAsync(async (req, res) => {
-    // console.log(req.params);
-    const { id } = req.params;
-    const campground = await Campground.findById(id);
-
-    const review = new Review(req.body.review);
-
-    // set the author of the review
-    review.author = req.user._id;
-    // console.log(review);
-
-    // console.log(`Campground: ${campground}`);
-
-    campground.reviews.push(review);
-    console.log("REVIEW:", review);
-
-    await review.save();
-    await campground.save();
-    req.flash("success", "Your review has been submitted!");
-
-    res.redirect(`/campgrounds/${campground._id}`);
-  })
-);
+router.post("/", isLoggedIn, validateReview, catchAsync(reviewController.submitReview));
 
 // allow user to delete a review
-router.delete(
-  "/:reviewId",
-  isLoggedIn,
-  isReviewAuthor,
-  catchAsync(async (req, res) => {
-    // find the campground and delete the corresponding id
-    // find the review using the id
-    const { id, reviewId } = req.params;
-
-    // using the specific campground to delete the specified review associated with it in the db
-    const removeCampgroundReview = await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
-
-    // delete the review from the reviews db collection
-    const deletedReview = await Review.findByIdAndDelete(reviewId);
-    // console.log(`This is the deleted review: ${deletedReview}`);
-
-    req.flash("success", "Successfully deleted review!");
-    res.redirect(`/campgrounds/${id}`);
-  })
-);
+router.delete("/:reviewId", isLoggedIn, isReviewAuthor, catchAsync(reviewController.deleteReview));
 
 module.exports = router;

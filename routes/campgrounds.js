@@ -6,102 +6,33 @@ const Review = require("../models/review");
 // const { isLoggedIn } = require("../middleware");
 const { validateCampground, isLoggedIn, isAuthor } = require("../middleware");
 
-router.get(
-  "/",
-  catchAsync(async (req, res) => {
-    const allCampgrounds = await Campground.find({});
-    res.render(`campgrounds/index`, { allCampgrounds });
-  })
-);
+// import the route logic (functions) from controllers
+const campgroundController = require("../controllers/campgrounds");
 
-router.get("/new", isLoggedIn, (req, res) => {
-  res.render("campgrounds/newCampground");
-});
+// use router.route to avoid duplicate route naming; handles http verbs based on the single route it should it
+// below, the .get route and .post route have the route campgrounds/, but different HTTP verbs
+router.route("/").get(catchAsync(campgroundController.index)).post(isLoggedIn, validateCampground, catchAsync(campgroundController.createNewCampground));
 
-router.post(
-  "/",
-  isLoggedIn,
-  validateCampground,
-  catchAsync(async (req, res, next) => {
-    // if (!req.body.campground) {
-    // 	throw new ExpressError("Invalid Campground Data", 400);
-    // }
+// router.get("/", catchAsync(campgroundController.index));
 
-    const campground = new Campground(req.body.campground);
-    campground.author = req.user._id;
-    await campground.save();
-    req.flash("success", "Successfully created a new campground!");
-    res.redirect(`/campgrounds/${campground._id}`);
-  })
-);
+router.get("/new", isLoggedIn, campgroundController.getNewCampgroundForm);
 
-router.get(
-  "/:id/edit",
-  isLoggedIn,
-  isAuthor,
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const campground = await Campground.findById(id);
-    if (!campground) {
-      req.flash("error", "Uh-oh, that campground was not found!");
-      return res.redirect("/campgrounds");
-    }
+// router.post("/", isLoggedIn, validateCampground, catchAsync(campgroundController.createNewCampground));
 
-    res.render("campgrounds/editCampground", { campground });
-  })
-);
+// use router.route to refactor the :id routes that are the same, but have different http verbs
+router
+  .route("/:id")
+  .get(catchAsync(campgroundController.showCampground))
+  .delete(isLoggedIn, isAuthor, catchAsync(campgroundController.deleteCampground))
+  .put(isLoggedIn, isAuthor, validateCampground, catchAsync(campgroundController.updateCampground));
 
-router.put(
-  "/:id",
-  isLoggedIn,
-  isAuthor,
-  validateCampground,
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
+router.get("/:id/edit", isLoggedIn, isAuthor, catchAsync(campgroundController.getEditCampgroundForm));
 
-    const updatedCampground = await Campground.findByIdAndUpdate(
-      id,
-      { ...req.body.campground },
-      {
-        runValidators: true,
-        new: true,
-      }
-    );
+// router.put("/:id", isLoggedIn, isAuthor, validateCampground, catchAsync(campgroundController.updateCampground));
 
-    console.log(updatedCampground);
-    req.flash("success", "Campground has been updated!");
-    res.redirect(`/campgrounds/${updatedCampground._id}`);
-  })
-);
+// router.delete("/:id", isLoggedIn, isAuthor, catchAsync(campgroundController.deleteCampground));
 
-router.delete(
-  "/:id",
-  isLoggedIn,
-  isAuthor,
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const deleteCampground = await Campground.findByIdAndDelete(id);
-    req.flash("success", "Successfully deleted campground!");
-    res.redirect("/campgrounds");
-  })
-);
-
-router.get(
-  "/:id",
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const campground = await Campground.findById(id)
-      .populate({ path: "reviews", populate: { path: "author" } })
-      .populate("author");
-    console.log(campground);
-    if (!campground) {
-      req.flash("error", "Uh-oh, that campground was not found!");
-      return res.redirect("/campgrounds");
-    }
-    // console.log(campground);
-    res.render("campgrounds/showDetails", { campground });
-  })
-);
+// router.get("/:id", catchAsync(campgroundController.showCampground));
 
 // export the router to be used in router.js
 module.exports = router;
