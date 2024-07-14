@@ -18,8 +18,12 @@ const createNewCampground = async (req, res, next) => {
   // }
 
   const campground = new Campground(req.body.campground);
+  // map over req.files taking the path and filename for each file object and store it in an image object
+  // then each image gets stored in an array of images, where images is a property of the Campground object
+  campground.images = req.files.map((f) => ({ url: f.path, filename: f.filename }));
   campground.author = req.user._id;
   await campground.save();
+  console.log(campground);
   req.flash("success", "Successfully created a new campground!");
   res.redirect(`/campgrounds/${campground._id}`);
 };
