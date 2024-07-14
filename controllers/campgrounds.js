@@ -53,6 +53,16 @@ const updateCampground = async (req, res) => {
     }
   );
 
+  const newImagesArray = req.files.map((f) => ({ url: f.path, filename: f.filename }));
+
+  // map over req.files taking the path and filename for each file object and store it in an image object
+  // then each image gets stored in an array of images, where images is a property of the Campground object
+  // then spread the images in the newImagewsArray returned by map, extracting the individual elements and appending
+  // it onto the existing images array
+  updatedCampground.images.push(...newImagesArray);
+
+  await updatedCampground.save();
+
   console.log(updatedCampground);
   req.flash("success", "Campground has been updated!");
   res.redirect(`/campgrounds/${updatedCampground._id}`);
