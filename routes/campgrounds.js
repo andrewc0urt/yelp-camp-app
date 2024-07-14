@@ -18,7 +18,7 @@ const campgroundController = require("../controllers/campgrounds");
 
 // use router.route to avoid duplicate route naming; handles http verbs based on the single route it should it
 // below, the .get route and .post route have the route campgrounds/, but different HTTP verbs
-router.route("/").get(catchAsync(campgroundController.index)).post(isLoggedIn, upload.array("image", 2), validateCampground, catchAsync(campgroundController.createNewCampground));
+router.route("/").get(catchAsync(campgroundController.index)).post(isLoggedIn, upload.array("image", 5), validateCampground, catchAsync(campgroundController.createNewCampground));
 // router
 //   .route("/")
 //   .get(catchAsync(campgroundController.index))
