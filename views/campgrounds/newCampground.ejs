@@ -18,11 +18,11 @@
         <div class="invalid-feedback">Please provide a location (City, State) for the campground.</div>
       </div>
 
-      <!-- allow user to upload an image file for the campground -->
-      <div class="mb-3">
-        <label for="image" class="form-label"> Upload Campground Image</label>
-        <input type="file" name="image" class="form-control" id="" multiple />
-      </div>
+      <!-- <div class="mb-3">
+        <label for="image" class="form-label">Default file input example</label>
+        <input class="form-control" name="image" type="file" id="form-file-input" multiple />
+        <div class="form-control" id="fileList">hi</div>
+      </div> -->
 
       <!-- <div class="mb-3">
 				<label for="image" class="form-label"> Image URL</label>
@@ -50,11 +50,28 @@
         <div class="invalid-feedback">Please provide a description of the campground.</div>
       </div>
 
+      <!-- allow user to upload an image file for the campground -->
+      <!-- <div class="mb-3">
+        <label for="image" class="form-label"> Upload Campground Image(s)</label>
+        <input type="file" name="image" class="form-control" id="form-file-input" multiple />
+        Div container to hold the file names -->
+      <!-- <div class="mt-2" id="fileList"></div>
+      </div> -->
+
+      <div class="mb-3">
+        <label for="image" class="form-label"> Upload Campground Image(s)</label>
+        <div class="file-loading">
+          <input id="image" name="image" type="file" multiple />
+        </div>
+      </div>
+
       <button class="btn btn-primary mb-3">Add Campground</button>
     </form>
 
-    <a href="/campgrounds">
-      <button class="btn btn-secondary">Go Back</button>
-    </a>
+    <div class="mb-5">
+      <a href="/campgrounds">
+        <button class="btn btn-secondary">Go Back</button>
+      </a>
+    </div>
   </div>
 </div>
