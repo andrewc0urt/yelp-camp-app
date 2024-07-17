@@ -1,4 +1,6 @@
+const campground = require("../models/campground");
 const Campground = require("../models/campground");
+const { cloudinary } = require("..//cloudinary");
 
 // logic to render all the campgrounds
 const index = async (req, res) => {
@@ -44,6 +46,8 @@ const getEditCampgroundForm = async (req, res) => {
 const updateCampground = async (req, res) => {
   const { id } = req.params;
 
+  // console.log(req.body);
+
   const updatedCampground = await Campground.findByIdAndUpdate(
     id,
     { ...req.body.campground },
@@ -63,7 +67,20 @@ const updateCampground = async (req, res) => {
 
   await updatedCampground.save();
 
-  console.log(updatedCampground);
+  // delete any images from mongoDB that have been checked for deletion by the campground author, IF THERE ARE ANY
+  // see mongoDB manual if more queries are needed in the future
+  if (req.body.deleteImages) {
+    // delete the images from Cloudinary that are in the deleteImages array
+    for (let eachFilename of req.body.deleteImages) {
+      await cloudinary.uploader.destroy(eachFilename);
+    }
+
+    // remove all images from MongoDB that are also found in the deleteImages array
+    await updatedCampground.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } });
+    // console.log("Below is the campground that has just been updated:");
+    // console.log(updatedCampground);
+  }
+
   req.flash("success", "Campground has been updated!");
   res.redirect(`/campgrounds/${updatedCampground._id}`);
 };
@@ -87,6 +104,8 @@ const showCampground = async (req, res) => {
     req.flash("error", "Uh-oh, that campground was not found!");
     return res.redirect("/campgrounds");
   }
+  // console.log("Campground below:");
+  // console.log(campground);
   // console.log(campground);
   res.render("campgrounds/showDetails", { campground });
 };
