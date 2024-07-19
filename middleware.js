@@ -4,7 +4,7 @@ const Campground = require("./models/campground");
 const Review = require("./models/review");
 
 const isLoggedIn = (req, res, next) => {
-  console.log(req.path, "------------", req.originalUrl);
+  // console.log(req.path, "------------", req.originalUrl);
   // use Passport's isAuthenticated to see if a user's logged in
   if (!req.isAuthenticated()) {
     req.session.returnTo = req.originalUrl;

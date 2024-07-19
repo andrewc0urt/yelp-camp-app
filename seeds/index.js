@@ -25,7 +25,7 @@ const seedRandomImg = async () => {
     const unsplashObjectsArray = response.data;
     const randomImgObject = sample(unsplashObjectsArray);
     const imgURLs = randomImgObject.urls;
-    console.log(imgURLs);
+    // console.log(imgURLs);
     return imgURLs;
   } catch (error) {
     console.log("Error fetching image:", error);
@@ -39,13 +39,23 @@ const seedDB = async () => {
   // loop through 50 times to create 50 new random campgrounds
   for (let i = 0; i < 10; i++) {
     const random1000 = Math.floor(Math.random() * 1000) + 1;
-    const randomImageURLs = await seedRandomImg();
+    // const randomImageURLs = await seedRandomImg();
     const price = Math.floor(Math.random() * 21) + 10; // random price b/w 10-30
     const camp = new Campground({
       author: "668ae98a57ffe838cb7872e7",
       location: `${cities[random1000].city}, ${cities[random1000].state}`,
       title: `${sample(descriptors)} ${sample(places)}`,
-      image: randomImageURLs.regular,
+      // image: randomImageURLs.regular,
+      images: [
+        {
+          url: "https://res.cloudinary.com/dkbbw75ue/image/upload/v1720980223/YelpCamp/txwwy0wt3mj0pwhfmkz6.jpg",
+          filename: "YelpCamp/txwwy0wt3mj0pwhfmkz6",
+        },
+        {
+          url: "https://res.cloudinary.com/dkbbw75ue/image/upload/v1720980223/YelpCamp/p74xbcnhjxsypvrf7ojk.jpg",
+          filename: "YelpCamp/p74xbcnhjxsypvrf7ojk",
+        },
+      ],
       description:
         "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sunt repellendus nostrum molestiae unde vero velit impedit odio nobis, nulla, id non autem doloremque perferendis natus, odit commodi eveniet ea ex. Et facilis consequuntur, natus, porro aperiam quasi culpa atque dicta nemo minus asperiores! Voluptates tempore suscipit, impedit aliquam cupiditate laboriosam magnam rerum expedita qui quidem illum? Obcaecati id sapiente et.",
       price: price,
