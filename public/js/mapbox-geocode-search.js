@@ -12,6 +12,8 @@ script.onload = function () {
     country: "US",
   };
 
+  let geoLocationDetailsObject;
+
   // select the div containing the MapboxGeocoder instance
   const mapboxContainer = document.querySelector("#mapbox-container");
 
@@ -60,12 +62,18 @@ script.onload = function () {
   geocoder.addEventListener("retrieve", (e) => {
     // Access the retrieved geojson data from the event details
     const feature = e.detail;
+    geoLocationDetailsObject = feature;
 
     // Extract the full address from the retrieved feature's properties
     const fullAddress = feature.properties.full_address;
 
     // Update the location input element's value with the full address
     locationInputElement.value = fullAddress;
+
+    // Update hidden inputs with geometry data
+    document.getElementById("geometry-type").value = feature.geometry.type;
+    document.getElementById("geometry-coordinates-0").value = feature.geometry.coordinates[0];
+    document.getElementById("geometry-coordinates-1").value = feature.geometry.coordinates[1];
   });
 
   // Select the element with the ID "add-campground-button"

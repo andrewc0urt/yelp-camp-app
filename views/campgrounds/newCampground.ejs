@@ -23,6 +23,11 @@
         <div class="invalid-feedback">Please provide a location for the campground.</div>
       </div>
 
+      <!-- Hidden input fields to store the GeoJSON geometry type and coordinates -->
+      <input type="hidden" id="geometry-type" name="campground[geometry][type]" />
+      <input type="hidden" id="geometry-coordinates-0" name="campground[geometry][coordinates][0]" />
+      <input type="hidden" id="geometry-coordinates-1" name="campground[geometry][coordinates][1]" />
+
       <div class="mb-3">
         <label for="price" class="form-label">Campground Price (USD)</label>
 
