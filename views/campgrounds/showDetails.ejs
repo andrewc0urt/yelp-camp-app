@@ -2,8 +2,16 @@
 <!-- Stylesheet for Starability to rate campgrounds on showDetails.ejs-->
 <link rel="stylesheet" href="/stylesheets/starability-checkmark.css" />
 
+<!-- Script to grab the MAPBOX_PUBLIC_TOKEN - which is needed for the js file to run -->
+<script>
+  const mapToken = `<%= process.env.MAPBOX_PUBLIC_TOKEN %>`;
+</script>
+
 <div class="row">
   <div class="col-6">
+    <!-- Mapbox Map -->
+    <div id="map" style="width: 400px; height: 300px"></div>
+
     <!-- Carousel (via Bootstrap) for displaying campground images -->
     <div id="campgroundCarousel" class="carousel slide">
       <div class="carousel-inner">
@@ -111,3 +119,6 @@
     </div>
   </div>
 </div>
+
+<!-- Javascript for displaying map on the page -->
+<script src="/js/showDetailsMap.js"></script>
