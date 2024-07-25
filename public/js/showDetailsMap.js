@@ -3,13 +3,13 @@ mapboxgl.accessToken = mapToken; // maptoken comes from the first loaded script 
 const map = new mapboxgl.Map({
   container: "map", // container ID
   style: "mapbox://styles/mapbox/streets-v12", // style URL
-  center: [-112.3535, 36.2679], // starting position [lng, lat]
-  zoom: 9, // starting zoom
+  center: campground.geometry.coordinates, // starting position [lng, lat]
+  zoom: 12, // starting zoom
 });
 
 // Create a new market
 const marker = new mapboxgl.Marker({
   color: "#B22222",
 })
-  .setLngLat([-112.3535, 36.2679])
+  .setLngLat(campground.geometry.coordinates)
   .addTo(map);
