@@ -36,14 +36,18 @@ const seedRandomImg = async () => {
 const seedDB = async () => {
   await Campground.deleteMany({});
 
-  // loop through 50 times to create 50 new random campgrounds
-  for (let i = 0; i < 10; i++) {
+  // loop through 8 times to create 8 new random campgrounds
+  for (let i = 0; i < 8; i++) {
     const random1000 = Math.floor(Math.random() * 1000) + 1;
     // const randomImageURLs = await seedRandomImg();
     const price = Math.floor(Math.random() * 21) + 10; // random price b/w 10-30
     const camp = new Campground({
-      author: "668ae98a57ffe838cb7872e7",
+      author: "668ae98a57ffe838cb7872e7", // MY USER ID
       location: `${cities[random1000].city}, ${cities[random1000].state}`,
+      geometry: {
+        type: "Point",
+        coordinates: [-72.608648, 40.908815],
+      },
       title: `${sample(descriptors)} ${sample(places)}`,
       // image: randomImageURLs.regular,
       images: [
