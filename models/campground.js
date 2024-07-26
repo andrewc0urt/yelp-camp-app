@@ -23,6 +23,20 @@ const CampgroundSchema = new Schema({
   price: Number,
   description: String,
   location: String,
+
+  // Define the geometry property for storing GeoJSON data
+  geometry: {
+    type: {
+      type: String,
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number], // Coordinates are an array of numbers [longitude, latitude]
+      required: true,
+    },
+  },
+
   author: {
     type: Schema.Types.ObjectId,
     ref: "User",

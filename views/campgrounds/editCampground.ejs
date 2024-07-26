@@ -1,9 +1,11 @@
 <% layout('/layouts/boilerplate') %>
+<script id="search-js" defer src="https://api.mapbox.com/search-js/v1.0.0-beta.21/web.js"></script>
+
 <div class="row">
   <h1 class="text-center">Edit Campground</h1>
 
   <div class="col-6 offset-3">
-    <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data">
+    <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data" id="edit-campground-form">
       <div class="mb-3">
         <label for="title" class="form-label">Campground Title</label>
         <input type="text" class="form-control" name="campground[title]" id="title" value="<%= campground.title %>" required />
@@ -12,8 +14,12 @@
 
       <div class="mb-3">
         <label for="location" class="form-label">Location</label>
-        <input type="text" class="form-control" name="campground[location]" id="location" value="<%= campground.location %>" required />
+        <input type="text" class="form-control" name="campground[location]" id="location" value="<%= campground.location %>" hidden required />
+        <div id="mapbox-container">
+          <mapbox-geocoder access-token="pk.eyJ1IjoiYXRjNTMxNyIsImEiOiJjbHlzdDN3aDkwbHJhMmtwd3ppeGMwZXR3In0.SIqJ5JKRiqqDMviXsrUASQ" proximity="0,0"> </mapbox-geocoder>
+        </div>
         <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">Please provide a location for the campground.</div>
       </div>
 
       <!-- Allow users to add more campground images -->
@@ -51,9 +57,11 @@
         <% }) %>
       </div>
 
-      <button class="btn btn-warning mb-3">Update Campground</button>
+      <button class="btn btn-warning mb-3" id="update-campground-button">Update Campground</button>
     </form>
 
     <a href="/campgrounds/<%= campground._id %>"> Back To Campground </a>
   </div>
 </div>
+
+<script src="/js/editPage-mapbox-geocode-search.js"></script>
