@@ -7,9 +7,11 @@ const map = new mapboxgl.Map({
   zoom: 12, // starting zoom
 });
 
-// Create a new market
+// Create a new marker
 const marker = new mapboxgl.Marker({
-  color: "#B22222",
+  color: "#3bb2d0",
+  size: "large",
 })
   .setLngLat(campground.geometry.coordinates)
+  .setPopup(new mapboxgl.Popup({ offset: 20, maxWidth: "none" }).setHTML(`<h3> ${campground.title} </h3><p>${campground.location} </p>`)) // sets a popup on this marker
   .addTo(map);
