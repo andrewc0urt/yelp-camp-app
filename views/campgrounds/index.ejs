@@ -3,6 +3,35 @@
 <script>
   // Retrieve the Mapbox public token from the environment variables
   const mapToken = `<%- process.env.MAPBOX_PUBLIC_TOKEN %>`;
+  // Retrieve the campground object and convert it to a JSON string
+  // Use JSON.parse to convert the string back into a JavaScript object
+  const campgrounds = JSON.parse(`<%- JSON.stringify(allCampgrounds) %>`);
+
+  // Convert the campgrounds array into a GeoJSON FeatureCollection
+  // This structure is required for Mapbox clustering functionality, similar to the example provided here:
+  // https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson
+  const allCampgroundsGeoJsonData = {
+    type: "FeatureCollection",
+    features: campgrounds.map((campground) => {
+      return {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: campground.geometry.coordinates, // [longitude, latitude]
+        },
+        properties: {
+          id: campground._id,
+          title: campground.title,
+          author: campground.author,
+          description: campground.description,
+          location: campground.location,
+          price: campground.price,
+          images: campground.images,
+          reviews: campground.reviews,
+        },
+      };
+    }),
+  };
 </script>
 
 <div id="map" class="mb-3" style="width: 100%; height: 500px"></div>
