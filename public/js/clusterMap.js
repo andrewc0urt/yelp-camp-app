@@ -52,13 +52,13 @@ map.on("load", () => {
   });
 
   map.addLayer({
-    id: "unclustered-point",
+    id: "unclustered-point", //unclustered meaning singled out
     type: "circle",
     source: "campgrounds",
     filter: ["!", ["has", "point_count"]],
     paint: {
       "circle-color": "#11b4da",
-      "circle-radius": 4,
+      "circle-radius": 6,
       "circle-stroke-width": 1,
       "circle-stroke-color": "#fff",
     },
@@ -87,6 +87,7 @@ map.on("load", () => {
   map.on("click", "unclustered-point", (e) => {
     console.log(e.features);
     const coordinates = e.features[0].geometry.coordinates.slice();
+
     const mag = e.features[0].properties.mag;
     const tsunami = e.features[0].properties.tsunami === 1 ? "yes" : "no";
 
@@ -99,7 +100,7 @@ map.on("load", () => {
       }
     }
 
-    new mapboxgl.Popup().setLngLat(coordinates).setHTML(`magnitude: ${mag}<br>Was there a tsunami?: ${tsunami}`).addTo(map);
+    // new mapboxgl.Popup().setLngLat(coordinates).setHTML(`magnitude: ${mag}<br>Was there a tsunami?: ${tsunami}`).addTo(map);
   });
 
   map.on("mouseenter", "clusters", () => {

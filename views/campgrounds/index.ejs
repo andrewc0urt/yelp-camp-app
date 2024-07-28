@@ -7,9 +7,9 @@
   // Use JSON.parse to convert the string back into a JavaScript object
   const campgrounds = JSON.parse(`<%- JSON.stringify(allCampgrounds) %>`);
 
-  // Convert the campgrounds array into a GeoJSON FeatureCollection
-  // This structure is required for Mapbox clustering functionality, similar to the example provided here:
-  // https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson
+  // // Convert the campgrounds array into a GeoJSON FeatureCollection
+  // // This structure is required for Mapbox clustering functionality, similar to the example provided here:
+  // // https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson
   const allCampgroundsGeoJsonData = {
     type: "FeatureCollection",
     features: campgrounds.map((campground) => {
@@ -32,6 +32,13 @@
       };
     }),
   };
+
+  // Directly embed the campgrounds data as GeoJSON
+  // THIS IS MORE SIMPLE THAN THE ABOVE, BUT THERE'S ISSUE WITH THE EJS WARNING
+  // Can't get rid of ejs warning, so chose to parse and then convert
+  // Below, because comments wouldn't comment it out, if using in the future,
+  // add the EJS tag output escape on JSON.stringify(allCampgrounds)
+  // const allCampgroundsGeoJsonData = { features: JSON.stringify(allCampgrounds)  };
 </script>
 
 <div id="map" class="mb-3" style="width: 100%; height: 500px"></div>

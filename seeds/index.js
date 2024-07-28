@@ -19,25 +19,27 @@ async function main() {
 const sample = (array) => array[Math.floor(Math.random() * array.length)];
 
 // function to return a random image from a collection using the Unsplash API
-const seedRandomImg = async () => {
-  try {
-    const response = await axios.get(`https://api.unsplash.com/collections/9046579/photos/?client_id=${accessKey}`);
-    const unsplashObjectsArray = response.data;
-    const randomImgObject = sample(unsplashObjectsArray);
-    const imgURLs = randomImgObject.urls;
-    // console.log(imgURLs);
-    return imgURLs;
-  } catch (error) {
-    console.log("Error fetching image:", error);
-  }
-};
+// Commented out because I made images an array of image objects - so each image
+// has a url and filename. These are hardcoded for simplicity, so seedRandomImg() isn't needed right now
+// const seedRandomImg = async () => {
+//   try {
+//     const response = await axios.get(`https://api.unsplash.com/collections/9046579/photos/?client_id=${accessKey}`);
+//     const unsplashObjectsArray = response.data;
+//     const randomImgObject = sample(unsplashObjectsArray);
+//     const imgURLs = randomImgObject.urls;
+//     // console.log(imgURLs);
+//     return imgURLs;
+//   } catch (error) {
+//     console.log("Error fetching image:", error);
+//   }
+// };
 
 // Remove everything from DB first, then seed it
 const seedDB = async () => {
   await Campground.deleteMany({});
 
   // loop through 8 times to create 8 new random campgrounds
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 250; i++) {
     const random1000 = Math.floor(Math.random() * 1000) + 1;
     // const randomImageURLs = await seedRandomImg();
     const price = Math.floor(Math.random() * 21) + 10; // random price b/w 10-30
