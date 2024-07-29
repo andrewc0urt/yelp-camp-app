@@ -85,11 +85,12 @@ map.on("load", () => {
   // the location of the feature, with
   // description HTML from its properties.
   map.on("click", "unclustered-point", (e) => {
+    // console.log(e.features[0].properties);
     console.log(e.features);
     const coordinates = e.features[0].geometry.coordinates.slice();
-
-    const mag = e.features[0].properties.mag;
-    const tsunami = e.features[0].properties.tsunami === 1 ? "yes" : "no";
+    const campgroundId = e.features[0].properties.id;
+    const campgroundTitle = e.features[0].properties.title;
+    const campgroundLocation = e.features[0].properties.location;
 
     // Ensure that if the map is zoomed out such that
     // multiple copies of the feature are visible, the
@@ -100,7 +101,15 @@ map.on("load", () => {
       }
     }
 
-    // new mapboxgl.Popup().setLngLat(coordinates).setHTML(`magnitude: ${mag}<br>Was there a tsunami?: ${tsunami}`).addTo(map);
+    // new mapboxgl.Popup().setLngLat(coordinates).setHTML(`: ${mag}<br>Was there a tsunami?: ${tsunami}`).addTo(map);
+    new mapboxgl.Popup()
+      .setLngLat(coordinates)
+      .setHTML(
+        `<b><a href="/campgrounds/${campgroundId}">${campgroundTitle}</a></b>
+        <br>
+        <p>${campgroundLocation}</p>`
+      )
+      .addTo(map);
   });
 
   map.on("mouseenter", "clusters", () => {
