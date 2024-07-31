@@ -1,27 +1,39 @@
 <% layout('layouts/boilerplate') %>
 
-<h1>User Registration Form</h1>
+<div class="container d-flex justify-content-center align-items-center mt-5">
+  <div class="row">
+    <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
+      <div class="card shadow">
+        <img class="card-img-top" src="https://images.unsplash.com/photo-1571863533956-01c88e79957e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1267&q=80" alt="" />
+        <div class="card-body">
+          <h5 class="card-title">Register</h5>
+          <form action="/register" method="POST" class="validated-form" novalidate>
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" name="user[username]" id="username" autofocus required />
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Please enter a valid, unique username.</div>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" name="user[email]" id="email" required />
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Please enter a valid email address.</div>
+            </div>
 
-<form action="/register" method="POST" class="validated-form" novalidate>
-  <div class="mb-3">
-    <label for="username" class="form-label">Username</label>
-    <input type="text" class="form-control" name="user[username]" id="username" required />
-    <div class="valid-feedback">Looks good!</div>
-    <div class="invalid-feedback">Please enter a valid, unique username.</div>
-  </div>
-  <div class="mb-3">
-    <label for="email" class="form-label">Email</label>
-    <input type="email" class="form-control" name="user[email]" id="email" required />
-    <div class="valid-feedback">Looks good!</div>
-    <div class="invalid-feedback">Please enter a valid email address.</div>
-  </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" name="user[password]" id="password" required />
+              <div class="valid-feedback">Password looks good!</div>
+              <div class="invalid-feedback">Please enter a valid password.</div>
+            </div>
 
-  <div class="mb-3">
-    <label for="password" class="form-label">Password</label>
-    <input type="password" class="form-control" name="user[password]" id="password" required />
-    <div class="valid-feedback">Password looks good!</div>
-    <div class="invalid-feedback">Please enter a valid password.</div>
+            <div class="d-grid">
+              <button class="btn btn-success">Register</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <button class="btn btn-success">Register</button>
-</form>
+</div>
