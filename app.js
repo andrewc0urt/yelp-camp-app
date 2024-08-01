@@ -93,11 +93,11 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/fakeUser", async (req, res) => {
-  const user = new User({ email: "testuser2@test.com", username: "tester1234" });
-  const newRegisteredUser = await User.register(user, "chicken");
-  res.send(newRegisteredUser);
-});
+// app.get("/fakeUser", async (req, res) => {
+//   const user = new User({ email: "testuser2@test.com", username: "tester1234" });
+//   const newRegisteredUser = await User.register(user, "chicken");
+//   res.send(newRegisteredUser);
+// });
 
 // Use the Router objects created in the routes folder
 app.use("/campgrounds", campgroundsRoute);
@@ -105,6 +105,8 @@ app.use("/campgrounds/:id/reviews", reviewsRoute);
 app.use("/", userRoute);
 
 // ROUTES
+
+// Homepage route
 app.get("/", (req, res) => {
   res.render("home");
 });
