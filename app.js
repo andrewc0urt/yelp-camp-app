@@ -18,6 +18,7 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const mongoSanitize = require("express-mongo-sanitize");
 
 const userRoute = require("./routes/users");
 const campgroundsRoute = require("./routes/campgrounds");
@@ -42,6 +43,9 @@ app.use(flash());
 
 // tell express to serve up the public folder with static files
 app.use(express.static(path.join(__dirname, "public")));
+
+// middleware to use express-mongo-sanitize to prevent nosql injection attacks
+app.use(mongoSanitize());
 
 // use express-session
 const sessionConfig = {
@@ -84,9 +88,10 @@ async function main() {
 //   }
 // };
 
-// Middle to use express-flash
+// Middleware
 app.use((req, res, next) => {
   // console.log(req.session);
+  console.log(req.query);
   res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
