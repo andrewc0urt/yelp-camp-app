@@ -19,6 +19,7 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const mongoSanitize = require("express-mongo-sanitize");
+const helmet = require("helmet");
 
 const userRoute = require("./routes/users");
 const campgroundsRoute = require("./routes/campgrounds");
@@ -71,6 +72,52 @@ passport.use(new LocalStrategy(User.authenticate())); // tell passport to use Lo
 // maintain a login session for a user (store and unstore sessions)
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
+// Use Helmet!
+app.use(helmet());
+
+// Define an array of allowed sources for script tags
+const scriptSrcUrls = ["https://stackpath.bootstrapcdn.com/", "https://api.tiles.mapbox.com/", "https://api.mapbox.com/", "https://kit.fontawesome.com/", "https://cdnjs.cloudflare.com/", "https://cdn.jsdelivr.net", "https://code.jquery.com/"];
+
+// Define an array of allowed sources for style tags
+const styleSrcUrls = [
+  "https://cdn.jsdelivr.net/",
+  "https://kit-free.fontawesome.com/",
+  "https://stackpath.bootstrapcdn.com/",
+  "https://api.mapbox.com/",
+  "https://api.tiles.mapbox.com/",
+  "https://fonts.googleapis.com/",
+  "https://use.fontawesome.com/",
+];
+
+// Define an array of allowed sources for connections
+const connectSrcUrls = ["https://api.mapbox.com/", "https://a.tiles.mapbox.com/", "https://b.tiles.mapbox.com/", "https://events.mapbox.com/"];
+
+// Define an array of allowed sources for font files
+const fontSrcUrls = ["https://cdn.jsdelivr.net/"];
+
+// Configure the Content Security Policy (CSP) using Helmet
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: [], // Default policy that disallows all sources
+      connectSrc: ["'self'", ...connectSrcUrls], // Allowed sources for AJAX/fetch requests
+      scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls], // Allowed sources for scripts
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls], // Allowed sources for styles
+      workerSrc: ["'self'", "blob:"], // Allowed sources for web workers and blobs
+      objectSrc: [], // Disallow all <object>, <embed>, and <applet> tags
+      imgSrc: [
+        "'self'",
+        "blob:",
+        "data:",
+        "https://res.cloudinary.com/dkbbw75ue/", //SHOULD MATCH CLOUDINARY ACCOUNT!
+        "https://images.unsplash.com/",
+        "https://cdn.jsdelivr.net/",
+      ],
+      fontSrc: ["'self'", ...fontSrcUrls], // Allowed sources for fonts
+    },
+  })
+);
 
 // Connect mongoose
 main().catch((err) => console.log(err));
