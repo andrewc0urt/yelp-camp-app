@@ -24,6 +24,7 @@ const userRoute = require("./routes/users");
 const campgroundsRoute = require("./routes/campgrounds");
 const reviewsRoute = require("./routes/reviews");
 const User = require("./models/user");
+const { name } = require("ejs");
 
 // use ejs-locals for all ejs templates:
 app.engine("ejs", ejsMate);
@@ -49,11 +50,13 @@ app.use(mongoSanitize());
 
 // use express-session
 const sessionConfig = {
+  name: "yelpCamp_session", // name of the session cookie
   secret: "thisisatemporarysecret",
   resave: false,
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
+    // secure: true, // this cookie should only work on https (not http or localhost)
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
@@ -90,8 +93,6 @@ async function main() {
 
 // Middleware
 app.use((req, res, next) => {
-  // console.log(req.session);
-  console.log(req.query);
   res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
