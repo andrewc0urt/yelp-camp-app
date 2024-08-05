@@ -18,11 +18,14 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const mongoSanitize = require("express-mongo-sanitize");
+const helmet = require("helmet");
 
 const userRoute = require("./routes/users");
 const campgroundsRoute = require("./routes/campgrounds");
 const reviewsRoute = require("./routes/reviews");
 const User = require("./models/user");
+const { name } = require("ejs");
 
 // use ejs-locals for all ejs templates:
 app.engine("ejs", ejsMate);
@@ -43,13 +46,18 @@ app.use(flash());
 // tell express to serve up the public folder with static files
 app.use(express.static(path.join(__dirname, "public")));
 
+// middleware to use express-mongo-sanitize to prevent nosql injection attacks
+app.use(mongoSanitize());
+
 // use express-session
 const sessionConfig = {
+  name: "yelpCamp_session", // name of the session cookie
   secret: "thisisatemporarysecret",
   resave: false,
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
+    // secure: true, // this cookie should only work on https (not http or localhost)
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
@@ -64,6 +72,52 @@ passport.use(new LocalStrategy(User.authenticate())); // tell passport to use Lo
 // maintain a login session for a user (store and unstore sessions)
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
+// Use Helmet!
+app.use(helmet());
+
+// Define an array of allowed sources for script tags
+const scriptSrcUrls = ["https://stackpath.bootstrapcdn.com/", "https://api.tiles.mapbox.com/", "https://api.mapbox.com/", "https://kit.fontawesome.com/", "https://cdnjs.cloudflare.com/", "https://cdn.jsdelivr.net", "https://code.jquery.com/"];
+
+// Define an array of allowed sources for style tags
+const styleSrcUrls = [
+  "https://cdn.jsdelivr.net/",
+  "https://kit-free.fontawesome.com/",
+  "https://stackpath.bootstrapcdn.com/",
+  "https://api.mapbox.com/",
+  "https://api.tiles.mapbox.com/",
+  "https://fonts.googleapis.com/",
+  "https://use.fontawesome.com/",
+];
+
+// Define an array of allowed sources for connections
+const connectSrcUrls = ["https://api.mapbox.com/", "https://a.tiles.mapbox.com/", "https://b.tiles.mapbox.com/", "https://events.mapbox.com/"];
+
+// Define an array of allowed sources for font files
+const fontSrcUrls = ["https://cdn.jsdelivr.net/"];
+
+// Configure the Content Security Policy (CSP) using Helmet
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: [], // Default policy that disallows all sources
+      connectSrc: ["'self'", ...connectSrcUrls], // Allowed sources for AJAX/fetch requests
+      scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls], // Allowed sources for scripts
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls], // Allowed sources for styles
+      workerSrc: ["'self'", "blob:"], // Allowed sources for web workers and blobs
+      objectSrc: [], // Disallow all <object>, <embed>, and <applet> tags
+      imgSrc: [
+        "'self'",
+        "blob:",
+        "data:",
+        "https://res.cloudinary.com/dkbbw75ue/", //SHOULD MATCH CLOUDINARY ACCOUNT!
+        "https://images.unsplash.com/",
+        "https://cdn.jsdelivr.net/",
+      ],
+      fontSrc: ["'self'", ...fontSrcUrls], // Allowed sources for fonts
+    },
+  })
+);
 
 // Connect mongoose
 main().catch((err) => console.log(err));
@@ -84,9 +138,8 @@ async function main() {
 //   }
 // };
 
-// Middle to use express-flash
+// Middleware
 app.use((req, res, next) => {
-  // console.log(req.session);
   res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
