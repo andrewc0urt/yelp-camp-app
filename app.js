@@ -27,6 +27,8 @@ const reviewsRoute = require("./routes/reviews");
 const User = require("./models/user");
 const { name } = require("ejs");
 
+// const atlasDatabaseUrl = process.env.MONGO_DB_ATLAS_URL;
+
 // use ejs-locals for all ejs templates:
 app.engine("ejs", ejsMate);
 
@@ -126,6 +128,12 @@ async function main() {
   await mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp-app", {});
   console.log("Database is successfully connected.");
 }
+
+// // Connects to the MongoDB cluster - Live Production
+// async function main() {
+//   await mongoose.connect(atlasDatabaseUrl, {});
+//   console.log("MongoDB ATLAS is successfully connected.");
+// }
 
 // const validateReview = (req, res, next) => {
 //   const { error } = reviewSchema.validate(req.body);
