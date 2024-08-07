@@ -6,7 +6,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000; // default deployment port or local port 3000 if in development
 const Campground = require("./models/campground");
 const ExpressError = require("./utilities/ExpressError");
 const catchAsync = require("./utilities/catchAsync");
@@ -15,6 +15,7 @@ const Review = require("./models/review");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -27,6 +28,7 @@ const reviewsRoute = require("./routes/reviews");
 const User = require("./models/user");
 const { name } = require("ejs");
 
+const databaseUrl = process.env.MONGO_DB_ATLAS_URL || "mongodb://127.0.0.1:27017/yelp-camp-app";
 // use ejs-locals for all ejs templates:
 app.engine("ejs", ejsMate);
 
@@ -49,17 +51,40 @@ app.use(express.static(path.join(__dirname, "public")));
 // middleware to use express-mongo-sanitize to prevent nosql injection attacks
 app.use(mongoSanitize());
 
-// use express-session
+// Secret key to be used in session configuration
+// SECRET will be a configured environment variable at deployment
+const secret = process.env.SECRET || "development-backup-secret-key";
+
+// Using connect-mongo to create a new connection from a MongoDB connection string
+// Straight from the documentation of 'connect-mongo'
+
+// Create a session store using MongoDB with connect-mongo
+// The 'mongoUrl' specifies the database connection string
+// The `touchAfter` option ensures that the session is only updated in the database once within a specified time period (in seconds),
+// even if the session data hasn't changed. This helps to reduce unnecessary writes to the database.
+// The 'crypto.secret' is used to sign the session ID cookie, adding an extra layer of security
+
+const store = MongoStore.create({
+  mongoUrl: databaseUrl,
+  touchAfter: 24 * 60 * 60,
+  crypto: {
+    secret, // Key used to encrypt session data
+  },
+});
+
+// Configure the session settings using express-session
+// 'store' specifies that sessions will be stored in MongoDB instead of the default memory store
 const sessionConfig = {
+  store,
   name: "yelpCamp_session", // name of the session cookie
-  secret: "thisisatemporarysecret",
-  resave: false,
-  saveUninitialized: true,
+  secret,
+  resave: false, // Don't resave session if unmodified
+  saveUninitialized: true, // Save uninitialized sessions to the store
   cookie: {
-    httpOnly: true,
+    httpOnly: true, // Ensures the cookie is sent only over HTTP(S), not client-side scripts
     // secure: true, // this cookie should only work on https (not http or localhost)
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
-    maxAge: 1000 * 60 * 60 * 24 * 7,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // Cookie expires in 7 days
+    maxAge: 1000 * 60 * 60 * 24 * 7, // Cookie max age of 7 days
   },
 };
 app.use(session(sessionConfig));
@@ -122,9 +147,15 @@ app.use(
 // Connect mongoose
 main().catch((err) => console.log(err));
 
+// async function main() {
+//   await mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp-app", {});
+//   console.log("Database is successfully connected.");
+// }
+
+// Connects to the MongoDB cluster - Live Production
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp-app", {});
-  console.log("Database is successfully connected.");
+  await mongoose.connect(databaseUrl, {});
+  console.log("MongoDB ATLAS is successfully connected.");
 }
 
 // const validateReview = (req, res, next) => {
