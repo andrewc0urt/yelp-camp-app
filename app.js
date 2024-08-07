@@ -15,6 +15,7 @@ const Review = require("./models/review");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -28,7 +29,7 @@ const User = require("./models/user");
 const { name } = require("ejs");
 
 // const atlasDatabaseUrl = process.env.MONGO_DB_ATLAS_URL;
-
+const dbUrl = "mongodb://127.0.0.1:27017/yelp-camp-app";
 // use ejs-locals for all ejs templates:
 app.engine("ejs", ejsMate);
 
@@ -51,8 +52,25 @@ app.use(express.static(path.join(__dirname, "public")));
 // middleware to use express-mongo-sanitize to prevent nosql injection attacks
 app.use(mongoSanitize());
 
-// use express-session
+// Using connect-mongo to create a new connection from a MongoDB connection string
+// Straight from the documentation of 'connect-mongo'
+// Advanced usage
+
+// The `touchAfter` option ensures that the session is only updated in the database once within a specified time period (in seconds),
+// even if the session data hasn't changed. This helps to reduce unnecessary writes to the database.
+
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  touchAfter: 24 * 60 * 60,
+  crypto: {
+    secret: "temporary-secret-key-shh",
+  },
+});
+
+// Configure the session use express-session
+// Default uses Memory store, but now using Mongo (by passing store)
 const sessionConfig = {
+  store,
   name: "yelpCamp_session", // name of the session cookie
   secret: "thisisatemporarysecret",
   resave: false,

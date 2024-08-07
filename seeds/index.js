@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const Campground = require("../models/campground");
+const Review = require("../models/review");
+const User = require("../models/user");
 const cities = require("./cities");
 const { descriptors, places } = require("./seedHelpers");
 const axios = require("axios");
@@ -37,9 +39,11 @@ const sample = (array) => array[Math.floor(Math.random() * array.length)];
 // Remove everything from DB first, then seed it
 const seedDB = async () => {
   await Campground.deleteMany({});
+  await Review.deleteMany({}); // delete all reviews from the database
+  await User.deleteMany({}); // delete all users from the database
 
   // loop through 8 times to create 8 new random campgrounds
-  for (let i = 0; i < 250; i++) {
+  for (let i = 0; i < 5; i++) {
     const random1000 = Math.floor(Math.random() * 1000) + 1;
     // const randomImageURLs = await seedRandomImg();
     const price = Math.floor(Math.random() * 21) + 10; // random price b/w 10-30
