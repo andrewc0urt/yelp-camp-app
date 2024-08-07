@@ -6,7 +6,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000; // default deployment port or local port 3000 if in development
 const Campground = require("./models/campground");
 const ExpressError = require("./utilities/ExpressError");
 const catchAsync = require("./utilities/catchAsync");
@@ -28,8 +28,7 @@ const reviewsRoute = require("./routes/reviews");
 const User = require("./models/user");
 const { name } = require("ejs");
 
-// const atlasDatabaseUrl = process.env.MONGO_DB_ATLAS_URL;
-const dbUrl = "mongodb://127.0.0.1:27017/yelp-camp-app";
+const databaseUrl = process.env.MONGO_DB_ATLAS_URL || "mongodb://127.0.0.1:27017/yelp-camp-app";
 // use ejs-locals for all ejs templates:
 app.engine("ejs", ejsMate);
 
@@ -52,6 +51,10 @@ app.use(express.static(path.join(__dirname, "public")));
 // middleware to use express-mongo-sanitize to prevent nosql injection attacks
 app.use(mongoSanitize());
 
+// Secret key to be used in session configuration
+// SECRET will be a configured environment variable at deployment
+const secret = process.env.SECRET || "development-backup-secret-key";
+
 // Using connect-mongo to create a new connection from a MongoDB connection string
 // Straight from the documentation of 'connect-mongo'
 
@@ -62,10 +65,10 @@ app.use(mongoSanitize());
 // The 'crypto.secret' is used to sign the session ID cookie, adding an extra layer of security
 
 const store = MongoStore.create({
-  mongoUrl: dbUrl,
+  mongoUrl: databaseUrl,
   touchAfter: 24 * 60 * 60,
   crypto: {
-    secret: "temporary-secret-key-shh", // Key used to encrypt session data
+    secret, // Key used to encrypt session data
   },
 });
 
@@ -74,7 +77,7 @@ const store = MongoStore.create({
 const sessionConfig = {
   store,
   name: "yelpCamp_session", // name of the session cookie
-  secret: "thisisatemporarysecret",
+  secret,
   resave: false, // Don't resave session if unmodified
   saveUninitialized: true, // Save uninitialized sessions to the store
   cookie: {
@@ -144,16 +147,16 @@ app.use(
 // Connect mongoose
 main().catch((err) => console.log(err));
 
-async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp-app", {});
-  console.log("Database is successfully connected.");
-}
-
-// // Connects to the MongoDB cluster - Live Production
 // async function main() {
-//   await mongoose.connect(atlasDatabaseUrl, {});
-//   console.log("MongoDB ATLAS is successfully connected.");
+//   await mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp-app", {});
+//   console.log("Database is successfully connected.");
 // }
+
+// Connects to the MongoDB cluster - Live Production
+async function main() {
+  await mongoose.connect(databaseUrl, {});
+  console.log("MongoDB ATLAS is successfully connected.");
+}
 
 // const validateReview = (req, res, next) => {
 //   const { error } = reviewSchema.validate(req.body);
