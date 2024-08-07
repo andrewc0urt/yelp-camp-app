@@ -54,32 +54,34 @@ app.use(mongoSanitize());
 
 // Using connect-mongo to create a new connection from a MongoDB connection string
 // Straight from the documentation of 'connect-mongo'
-// Advanced usage
 
+// Create a session store using MongoDB with connect-mongo
+// The 'mongoUrl' specifies the database connection string
 // The `touchAfter` option ensures that the session is only updated in the database once within a specified time period (in seconds),
 // even if the session data hasn't changed. This helps to reduce unnecessary writes to the database.
+// The 'crypto.secret' is used to sign the session ID cookie, adding an extra layer of security
 
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   touchAfter: 24 * 60 * 60,
   crypto: {
-    secret: "temporary-secret-key-shh",
+    secret: "temporary-secret-key-shh", // Key used to encrypt session data
   },
 });
 
-// Configure the session use express-session
-// Default uses Memory store, but now using Mongo (by passing store)
+// Configure the session settings using express-session
+// 'store' specifies that sessions will be stored in MongoDB instead of the default memory store
 const sessionConfig = {
   store,
   name: "yelpCamp_session", // name of the session cookie
   secret: "thisisatemporarysecret",
-  resave: false,
-  saveUninitialized: true,
+  resave: false, // Don't resave session if unmodified
+  saveUninitialized: true, // Save uninitialized sessions to the store
   cookie: {
-    httpOnly: true,
+    httpOnly: true, // Ensures the cookie is sent only over HTTP(S), not client-side scripts
     // secure: true, // this cookie should only work on https (not http or localhost)
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
-    maxAge: 1000 * 60 * 60 * 24 * 7,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // Cookie expires in 7 days
+    maxAge: 1000 * 60 * 60 * 24 * 7, // Cookie max age of 7 days
   },
 };
 app.use(session(sessionConfig));
