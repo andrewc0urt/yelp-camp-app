@@ -29,6 +29,13 @@ const User = require("./models/user");
 const { name } = require("ejs");
 
 const databaseUrl = process.env.MONGO_DB_ATLAS_URL || "mongodb://127.0.0.1:27017/yelp-camp-app";
+
+// Connects to the MongoDB cluster - Live Production
+async function main() {
+  await mongoose.connect(databaseUrl, {});
+  console.log("MongoDB ATLAS is successfully connected.");
+}
+
 // use ejs-locals for all ejs templates:
 app.engine("ejs", ejsMate);
 
@@ -42,8 +49,6 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 
 // npm package method-override with POST having ?_method=DELETE
 app.use(methodOverride("_method"));
-
-app.use(flash());
 
 // tell express to serve up the public folder with static files
 app.use(express.static(path.join(__dirname, "public")));
@@ -88,15 +93,7 @@ const sessionConfig = {
   },
 };
 app.use(session(sessionConfig));
-
-// middleware required to use passport (see docs for more)
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate())); // tell passport to use LocalStrategy, pass the User model and authenticate it
-
-// maintain a login session for a user (store and unstore sessions)
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+app.use(flash());
 
 // Use Helmet!
 app.use(helmet());
@@ -152,12 +149,6 @@ main().catch((err) => console.log(err));
 //   console.log("Database is successfully connected.");
 // }
 
-// Connects to the MongoDB cluster - Live Production
-async function main() {
-  await mongoose.connect(databaseUrl, {});
-  console.log("MongoDB ATLAS is successfully connected.");
-}
-
 // const validateReview = (req, res, next) => {
 //   const { error } = reviewSchema.validate(req.body);
 
@@ -168,6 +159,15 @@ async function main() {
 //     next();
 //   }
 // };
+
+// middleware required to use passport (see docs for more)
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate())); // tell passport to use LocalStrategy, pass the User model and authenticate it
+
+// maintain a login session for a user (store and unstore sessions)
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // Middleware
 app.use((req, res, next) => {
