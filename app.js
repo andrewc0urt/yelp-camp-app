@@ -90,7 +90,7 @@ const sessionConfig = {
   saveUninitialized: true, // Save uninitialized sessions to the store
   cookie: {
     httpOnly: true, // Ensures the cookie is sent only over HTTP(S), not client-side scripts
-    // secure: true, // this cookie should only work on https (not http or localhost)
+    secure: process.env.NODE_ENV === "production", // this cookie should only work on https (not http or localhost) in production
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // Cookie expires in 7 days
     maxAge: 1000 * 60 * 60 * 24 * 7, // Cookie max age of 7 days
   },
@@ -174,6 +174,7 @@ passport.deserializeUser(User.deserializeUser());
 
 // Middleware
 app.use((req, res, next) => {
+  console.log("Current user:", req.user); // Add this line
   res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
