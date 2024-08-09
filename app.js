@@ -28,7 +28,10 @@ const reviewsRoute = require("./routes/reviews");
 const User = require("./models/user");
 const { name } = require("ejs");
 
-const databaseUrl = process.env.MONGO_DB_ATLAS_URL || "mongodb://127.0.0.1:27017/yelp-camp-app";
+// Define the database URL based on the environment
+const databaseUrl = process.env.NODE_ENV !== "production" ? "mongodb://127.0.0.1:27017/yelp-camp-app" : process.env.MONGO_DB_ATLAS_URL;
+
+// const databaseUrl = process.env.MONGO_DB_ATLAS_URL || "mongodb://127.0.0.1:27017/yelp-camp-app";
 
 // Connects to the MongoDB cluster - Live Production
 async function main() {
