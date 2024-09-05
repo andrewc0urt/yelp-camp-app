@@ -40,7 +40,9 @@ const sample = (array) => array[Math.floor(Math.random() * array.length)];
 const seedDB = async () => {
   await Campground.deleteMany({});
   await Review.deleteMany({}); // delete all reviews from the database
-  await User.deleteMany({}); // delete all users from the database
+  // await User.deleteMany({}); // delete all users from the database
+  // Commented out the above line because it caused an error when trying to view campgrounds since it deleted all users
+  // and tried to use a deleted user ID for the author
 
   // loop through 8 times to create 8 new random campgrounds
   for (let i = 0; i < 5; i++) {
@@ -48,7 +50,7 @@ const seedDB = async () => {
     // const randomImageURLs = await seedRandomImg();
     const price = Math.floor(Math.random() * 21) + 10; // random price b/w 10-30
     const camp = new Campground({
-      author: "668ae98a57ffe838cb7872e7", // MY USER ID
+      author: "66d8b3943404e4eafd61e9d2", // ADMIN user ID (_id) for development database
       location: `${cities[random1000].city}, ${cities[random1000].state}`,
       geometry: {
         type: "Point",
