@@ -174,7 +174,7 @@ passport.deserializeUser(User.deserializeUser());
 
 // Middleware
 app.use((req, res, next) => {
-  console.log("Current user:", req.user); // Add this line
+  // console.log("Current user:", req.user); // Add this line to see who's currently logged in
   res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
