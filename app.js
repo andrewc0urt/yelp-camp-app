@@ -31,6 +31,10 @@ const { name } = require("ejs");
 // Define the database URL based on the environment
 const databaseUrl = process.env.NODE_ENV !== "production" ? "mongodb://127.0.0.1:27017/yelp-camp-app" : process.env.MONGO_DB_ATLAS_URL;
 
+// Trust the first proxy in the chain for correct IP and protocol info
+// Necessary when behind a reverse proxy or load balancer (like in Fly.io)
+app.set("trust proxy", 1);
+
 // const databaseUrl = process.env.MONGO_DB_ATLAS_URL || "mongodb://127.0.0.1:27017/yelp-camp-app";
 
 // Connects to the MongoDB cluster - Live Production
