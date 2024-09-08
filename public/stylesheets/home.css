@@ -1,4 +1,5 @@
 body {
+  font-family: "Roboto", Arial, sans-serif;
   height: 100vh;
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://images.unsplash.com/photo-1559521783-1d1599583485?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80");
   background-size: cover;
@@ -9,7 +10,12 @@ body {
 }
 
 .cover-container {
-  max-width: 60vw;
+  /* max-width: 60vw; */
+  max-width: 95vw;
+}
+
+#homepage-nav {
+  margin-bottom: auto;
 }
 
 .nav-link {
@@ -25,8 +31,12 @@ body {
   border-bottom-color: rgba(255, 255, 255, 0.7);
 }
 
-.nav-link.active {
+.navbar-nav .nav-link.active {
+  /* Set the color of the active link in the navbar*/
   color: white;
+}
+
+.nav-link.active {
   border-bottom-color: white;
 }
 
@@ -34,4 +44,47 @@ body {
 .btn-secondary:hover {
   color: #333;
   text-shadow: none;
+}
+
+.btn-secondary:hover {
+  opacity: 0.8;
+}
+
+#homepage-content > * {
+  margin-bottom: 2rem;
+}
+
+.lead {
+  display: flex;
+  flex-direction: column;
+}
+
+#homepage-content span {
+  padding-bottom: 0.5rem;
+}
+
+/* Media Query for MEDIUM Screens and DOWN */
+@media (max-width: 991.98px) {
+  .nav-link.active {
+    border-bottom: none;
+    /* color: white; */
+  }
+
+  ul > li {
+    display: flex;
+    justify-content: end;
+  }
+
+  /* Put padding between the navbar toggler and the first navigation link item ('Home') */
+  ul > :first-child {
+    padding-top: 0.5rem;
+  }
+
+  #homepage-content span {
+    font-size: 1rem;
+  }
+}
+
+/* Media query for SMALL Screens and DOWN */
+@media (max-width: 767.98px) {
 }

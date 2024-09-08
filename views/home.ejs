@@ -8,42 +8,63 @@
     <!-- Bootstrap CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
 
+    <!-- Google Fonts CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet" />
+
     <!-- Custom Stylsheet -->
     <link rel="stylesheet" href="/stylesheets/home.css" />
   </head>
   <body class="d-flex text-center text-white bg-dark">
     <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-      <header class="mb-auto">
-        <div>
-          <h3 class="float-md-start mb-0">YelpCamp</h3>
-          <nav class="nav nav-masthead justify-content-center float-md-end">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-            <a class="nav-link" href="/campgrounds">All Campgrounds</a>
+      <nav class="navbar navbar-expand-lg" id="homepage-nav" data-bs-theme="dark">
+        <div class="container-fluid">
+          <h3 class="">YelpCamp</h3>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#homepageNavbarToggler" aria-controls="homepageNavbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="homepageNavbarToggler">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 w-100 justify-content-end">
+              <li class="nav-item" aria-current="page">
+                <a class="nav-link active" aria-current="page" href="#">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/campgrounds">All Campgrounds</a>
+              </li>
+              <!-- show next two links if the user is not currently logged in -->
+              <% if (!currentUser) { %>
+              <li class="nav-item">
+                <a class="nav-link" href="/login">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/register">Register</a>
+              </li>
 
-            <!-- show next two links if the user is not currently logged in -->
-            <% if (!currentUser) { %>
-            <a class="nav-link" href="/login">Login</a>
-            <a class="nav-link" href="/register">Register</a>
-            <% } else { %>
-            <a class="nav-link" href="/logout">Logout</a>
-            <% } %>
-          </nav>
+              <% } else { %>
+              <li class="nav-item">
+                <a class="nav-link" href="/register">Register</a>
+              </li>
+
+              <% } %>
+            </ul>
+          </div>
         </div>
-      </header>
+      </nav>
 
-      <main class="px-3">
+      <main class="px-3" id="homepage-content">
         <h1>YelpCamp</h1>
         <p class="lead">
-          Welcome to YelpCamp! <br />
-          Dive into adventure and discover a world of incredible campgrounds. <br />
-          Join our community, share your favorite spots, and connect with fellow campers!
+          <span>Welcome to YelpCamp!</span>
+          <span>Dive into adventure and discover a world of incredible campgrounds.</span>
+          <span>Join our community, share your favorite spots, and connect with fellow campers!</span>
         </p>
-        <a href="/campgrounds" class="btn btn-lg btn-secondary font-weight-bold bg-white">View Campgrounds</a>
-        <p class="py-3">Disclaimer: At this time, YelpCamp is a desktop-only application, not designed for responsiveness on medium and smaller devices.</p>
+        <a href="/campgrounds" class="btn btn-secondary font-weight-bold bg-white">View Campgrounds</a>
       </main>
 
-      <footer class="mt-auto text-white-50">
-        <p>&copy; 2024 YelpCamp</p>
+      <footer class="mt-auto">
+        <p>Disclaimer: At this time, YelpCamp is a desktop-only application, not designed for responsiveness on medium and smaller devices.</p>
+        <p class="text-white-50">&copy; 2024 YelpCamp</p>
       </footer>
     </div>
 
