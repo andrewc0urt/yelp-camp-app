@@ -1,0 +1,13 @@
+/* Ensure all card widths & heights are the same */
+.individual-campground-card {
+  width: 100%;
+  max-width: 1294px;
+}
+
+/* Ensure all card image heights are the same to prevent different size cards and ensure images take up height of card */
+.individual-campground-card .img-fluid {
+  width: 100%;
+  /* height: auto; */
+  height: 277px;
+  object-fit: cover; /* Ensures the image covers the container without distortion */
+}
